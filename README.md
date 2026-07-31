@@ -133,28 +133,7 @@ This repository helps you understand:
 - Linux shell scripting
 
 ---
-
-## Sample Pipeline Flow
-
-Checkout
-    │
-    ▼
-Build
-    │
-    ▼
-Test
-    │
-    ▼
-Plan (Terraform)
-    │
-    ▼
-Apply
-    │
-    ▼
-Deploy
-
----
-
+  
 ## Use Cases
 
 This repository can be used for:
