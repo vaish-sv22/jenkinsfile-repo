@@ -2,8 +2,17 @@ pipeline {
     agent any
 
     parameters {
-        booleanParam(name: 'autoApprove', defaultValue: false, description: 'Automatically run apply after generating plan?')
-        choice(name: 'action', choices: ['apply', 'destroy'], description: 'Select the action to perform')
+        booleanParam(
+            name: 'autoApprove',
+            defaultValue: false,
+            description: 'Automatically approve Terraform apply or destroy'
+        )
+
+        choice(
+            name: 'action',
+            choices: ['apply', 'destroy'],
+            description: 'Select Terraform action'
+        )
     }
 
     environment {
@@ -13,28 +22,50 @@ pipeline {
     }
 
     stages {
+
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/Rohittkilatur14/terraform-modules.git'
+                git branch: 'main', url: 'https://github.com/vaish-sv22/jenkinsfile-repo.git'
             }
         }
-        stage('Terraform init') {
+
+        stage('Terraform Init') {
             steps {
                 bat 'terraform init'
             }
         }
-        stage('Plan') {
+
+        stage('Terraform Plan') {
             steps {
-                bat 'terraform plan -out tfplan'
+                bat 'terraform plan -out=tfplan'
                 bat 'terraform show -no-color tfplan > tfplan.txt'
             }
         }
-        stage('Apply / Destroy') {
+
+        stage('Terraform Apply / Destroy') {
             steps {
                 script {
-                   bat 'terraform apply --auto-approve'
+                    if (params.action == 'apply') {
+                        bat "terraform apply ${params.autoApprove ? '--auto-approve' : ''}"
+                    } else {
+                        bat "terraform destroy ${params.autoApprove ? '--auto-approve' : ''}"
+                    }
                 }
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Terraform pipeline completed successfully.'
+        }
+
+        failure {
+            echo 'Terraform pipeline failed.'
+        }
+
+        always {
+            echo 'Pipeline execution finished.'
         }
     }
 }
