@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/your-repository.git'
+               git branch: 'main', url: 'https://github.com/vaish-sv22/jenkinsfile-repo.git'
             }
         }
 
@@ -18,6 +18,45 @@ pipeline {
             steps {
                 sh 'pytest'
             }
+        }
+    }
+}
+and 
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/vaish-sv22/jenkinsfile-repo.git'
+            }
+        }
+
+        stage('Install Packages') {
+            steps {
+                sh 'pip install -r requirements.txt'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh 'pytest'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Python pipeline executed successfully.'
+        }
+
+        failure {
+            echo 'Python pipeline failed.'
+        }
+
+        always {
+            echo 'Pipeline execution completed.'
         }
     }
 }
